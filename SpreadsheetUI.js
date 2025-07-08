@@ -248,6 +248,7 @@ class SpreadsheetUI {
     const callback = (params) => {
       const selectedValue = params.value;
       if (selectedValue in callbacks) {
+        console.log("Dropdown callback: ", selectedValue);
         callbacks[selectedValue](params);
       }
     };
@@ -371,7 +372,13 @@ class SpreadsheetUI {
           /* We are going to call the trigger *once* per item. */
           for (let cell of triggeredCells) {
             if (this.debug)
-              console.log("Callback for ", cell.a1, "from", trigger.cell);
+              console.log(
+                "Callback for ",
+                cell.a1,
+                "from",
+                trigger.cell,
+                cell.value
+              );
             trigger.callback({
               value: cell.value,
               range: cell.range,
