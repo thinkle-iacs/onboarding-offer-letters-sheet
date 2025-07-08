@@ -192,6 +192,22 @@ function createEmail({ a1 }) {
   let personalEmail = onboardSheet
     .getRange(`${headerMap[PERSONAL_EMAIL]}${row1based}`)
     .getValue();
+  // Validate email: must be non-empty and match a basic email regex
+  const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+  if (!personalEmail || !emailRegex.test(personalEmail)) {
+    const emailCell = `${headerMap[PERSONAL_EMAIL]}${row1based}`;
+    SpreadsheetApp.getUi().alert(
+      'No valid recovery email found!\n\n'
+      + `Please enter a valid email address in cell ${emailCell} to send credentials to.\n\n`
+      + 'If the user does not have a personal email, consider entering the supervisor\'s email as the recovery email so credentials can be delivered.'
+    );
+    markUnset({ a1 });
+    SpreadsheetApp.getActiveSpreadsheet().toast('Aborted: No valid recovery email provided.');
+    return {
+      success: false,
+      error: 'No valid recovery email provided',
+    };
+  }
   let school = onboardSheet
     .getRange(`${headerMap[SCHOOL]}${row1based}`)
     .getValue();
@@ -362,9 +378,8 @@ function getNamedValues({ range, a1 }) {
   if (namedValues[IACS_ACCOUNT]) {
     namedValues[
       "Google Onboarding Link"
-    ] = `https://tinyurl.com/iacs-onboard?u=${
-      namedValues[IACS_ACCOUNT].split("@")[0]
-    }`;
+    ] = `https://tinyurl.com/iacs-onboard?u=${namedValues[IACS_ACCOUNT].split("@")[0]
+      }`;
   } else {
     namedValues["Google Onboarding Link"] = "https://tinyurl.com/iacs-onboard";
   }
